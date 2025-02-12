@@ -36,28 +36,28 @@
 
   <style>
     #editOrderQuantity {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 10px;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        gap: 10px !important;
     }
 
-    #editOrderQuantity input{
-        width: 50px;
-        text-align: center;
-        border: none;
+    #editOrderQuantity input, #packageQuantity{
+        width: 50px !important;
+        text-align: center !important;
+        border: none !important;
     }
 
     #editOrderQuantity #increase,  #editOrderQuantity #decrease {
-        font-size: 1.5rem;
-        cursor: pointer;        
+        font-size: 1.5rem !important;
+        cursor: pointer !important;        
     }
 
   </style>
 
   <script>
-            window.hs_config = {"autopath":"@@autopath","deleteLine":"hs-builder:delete","deleteLine:build":"hs-builder:build-delete","deleteLine:dist":"hs-builder:dist-delete","previewMode":false,"startPath":"/index.html","vars":{"themeFont":"https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap","version":"?v=1.0"},"layoutBuilder":{"extend":{"switcherSupport":true},"header":{"layoutMode":"default","containerMode":"container-fluid"},"sidebarLayout":"default"},"themeAppearance":{"layoutSkin":"default","sidebarSkin":"default","styles":{"colors":{"primary":"#377dff","transparent":"transparent","white":"#fff","dark":"132144","gray":{"100":"#f9fafc","900":"#1e2022"}},"font":"Inter"}},"languageDirection":{"lang":"en"},"skipFilesFromBundle":{"dist":["assets/js/hs.theme-appearance.js","assets/js/hs.theme-appearance-charts.js","assets/js/demo.js"],"build":["assets/css/theme.css","assets/vendor/hs-navbar-vertical-aside/dist/hs-navbar-vertical-aside-mini-cache.js","assets/js/demo.js","assets/css/theme-dark.css","assets/css/docs.css","assets/vendor/icon-set/style.css","assets/js/hs.theme-appearance.js","assets/js/hs.theme-appearance-charts.js","node_modules/chartjs-plugin-datalabels/dist/chartjs-plugin-datalabels.min.js","assets/js/demo.js"]},"minifyCSSFiles":["assets/css/theme.css","assets/css/theme-dark.css"],"copyDependencies":{"dist":{"*assets/js/theme-custom.js":""},"build":{"*assets/js/theme-custom.js":"","node_modules/bootstrap-icons/font/*fonts/**":"assets/css"}},"buildFolder":"","replacePathsToCDN":{},"directoryNames":{"src":"./src","dist":"./dist","build":"./build"},"fileNames":{"dist":{"js":"theme.min.js","css":"theme.min.css"},"build":{"css":"theme.min.css","js":"theme.min.js","vendorCSS":"vendor.min.css","vendorJS":"vendor.min.js"}},"fileTypes":"jpg|png|svg|mp4|webm|ogv|json"}
-            window.hs_config.gulpRGBA = (p1) => {
+  window.hs_config = {"autopath":"@@autopath","deleteLine":"hs-builder:delete","deleteLine:build":"hs-builder:build-delete","deleteLine:dist":"hs-builder:dist-delete","previewMode":false,"startPath":"/index.html","vars":{"themeFont":"https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap","version":"?v=1.0"},"layoutBuilder":{"extend":{"switcherSupport":true},"header":{"layoutMode":"default","containerMode":"container-fluid"},"sidebarLayout":"default"},"themeAppearance":{"layoutSkin":"default","sidebarSkin":"default","styles":{"colors":{"primary":"#377dff","transparent":"transparent","white":"#fff","dark":"132144","gray":{"100":"#f9fafc","900":"#1e2022"}},"font":"Inter"}},"languageDirection":{"lang":"en"},"skipFilesFromBundle":{"dist":["assets/js/hs.theme-appearance.js","assets/js/hs.theme-appearance-charts.js","assets/js/demo.js"],"build":["assets/css/theme.css","assets/vendor/hs-navbar-vertical-aside/dist/hs-navbar-vertical-aside-mini-cache.js","assets/js/demo.js","assets/css/theme-dark.css","assets/css/docs.css","assets/vendor/icon-set/style.css","assets/js/hs.theme-appearance.js","assets/js/hs.theme-appearance-charts.js","node_modules/chartjs-plugin-datalabels/dist/chartjs-plugin-datalabels.min.js","assets/js/demo.js"]},"minifyCSSFiles":["assets/css/theme.css","assets/css/theme-dark.css"],"copyDependencies":{"dist":{"*assets/js/theme-custom.js":""},"build":{"*assets/js/theme-custom.js":"","node_modules/bootstrap-icons/font/*fonts/**":"assets/css"}},"buildFolder":"","replacePathsToCDN":{},"directoryNames":{"src":"./src","dist":"./dist","build":"./build"},"fileNames":{"dist":{"js":"theme.min.js","css":"theme.min.css"},"build":{"css":"theme.min.css","js":"theme.min.js","vendorCSS":"vendor.min.css","vendorJS":"vendor.min.js"}},"fileTypes":"jpg|png|svg|mp4|webm|ogv|json"}
+  window.hs_config.gulpRGBA = (p1) => {
   const options = p1.split(',')
   const hex = options[0].toString()
   const transparent = options[1].toString()
@@ -1523,18 +1523,23 @@
                       </div>
                       <!-- End Col -->
   
-                      <div class="col col-md-2 align-self-center">
+                      <div class="col col-md-1 align-self-center">
                         <h5><%=product.mrpPrice%></h5>
                       </div>
                       <!-- End Col -->
   
-                      <div class="col col-md-2 align-self-center">
+                      <div class="col col-md-1 align-self-center">
                         <h5><%=product.quantity%></h5>
                       </div>
                       <!-- End Col -->
   
                       <div class="col col-md-1 align-self-center text-end">
                         <h5><%=product.sellingPrice%></h5>
+                      </div>
+                      <!-- End Col -->
+
+                      <div class="col col-md-2 align-self-center">
+                        <button class="btn btn btn-primary map-inventory" data-product='<%= JSON.stringify(product) %>'>Map Inventory</button>
                       </div>
                       <!-- End Col -->
                     </div>
@@ -1871,6 +1876,74 @@
 
 
     <!-- End Footer -->
+
+
+
+
+
+    <!-- Modal -->
+  <div id="productDetailsModal" class="modal fade modal-xl" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered" role="document">
+      <div class="modal-content">
+          <div class="modal-header">
+          <!-- Filter -->
+          <!-- End Filter -->
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            
+              <!-- Table -->
+              <div class="table-responsive datatable-custom">
+                <table class="js-datatable table table-borderless table-thead-bordered table-nowrap table-align-middle card-table"
+                        data-hs-datatables-options='{
+                                "order": [],
+                                "search": "#datatableWithSearchInput",
+                                "isResponsive": false,
+                                "isShowPaging": false,
+                                "pagination": "datatableWithSearchPagination"
+                              }'>
+                  <thead class="thead-light">
+                  <tr>
+                    <th>Product</th>
+                    <th>mrpPrice</th>
+                    <th>sellingPrice</th>
+                    <th>Available</th>
+                    <th>Quantity</th>
+                    <th>Action</th>
+                  </tr>
+                  </thead>
+
+                  <tbody>
+            
+                  </tbody>
+                </table>
+              </div>
+              <!-- End Table -->
+            
+              <!-- Footer -->
+              <div class="card-footer">
+                <!-- Pagination -->
+                <div class="d-flex justify-content-center justify-content-sm-end">
+                  <nav id="datatableWithSearchPagination" aria-label="Activity pagination"></nav>
+                </div>
+                <!-- End Pagination -->
+              </div>
+              <!-- End Footer -->
+            <!-- </div> -->
+          </div>
+          <div class="modal-footer">
+          <button type="button" class="btn btn-white" data-bs-dismiss="modal">Close</button>
+          <button type="button" id="saveInventoryChangesButton" class="btn btn-primary">Save changes</button>
+          </div>
+      </div>
+      </div>
+  </div>
+  <!-- End Modal -->
+
+
+
+
+
   </main>
   <!-- ========== END MAIN CONTENT ========== -->
 
@@ -1954,6 +2027,146 @@
 
 
   <script>
+    let orderData = <%- JSON.stringify(data) %>;
+
+    let test = {}
+    const productIds = orderData.products.map(product => product.productId);
+    fetch("http://localhost/two-cliq-dash-apis/twocliq-dashboard/orders/inventoryList", {
+    method: 'POST',
+    headers: { "login-token": "testToken", "Content-Type": "application/json" },
+    body: JSON.stringify({ productIds })
+    })
+    .then(response => response.json())
+    .then(data => {
+      test = data.data
+      console.log(test)
+    })
+    .catch(error => {
+    console.error('Error fetching inventory data:', error);
+    });
+
+    
+
+    document.querySelectorAll('.map-inventory').forEach(btn => {
+      btn.addEventListener('click', function() {
+        const product = JSON.parse(btn.getAttribute('data-product'));
+        const id = product.productId;
+        console.log(test)
+        const list = test[id];
+        console.log(list)
+        const modalBody = document.querySelector('#productDetailsModal .modal-body');
+        modalBody.innerHTML = `
+          <div class="d-flex">
+            <div class="flex-shrink-0">
+              <div class="avatar avatar-xl">
+          <img class="img-fluid" src="${product.imageUrl}" alt="Image Description">
+              </div>
+            </div>
+            <div class="flex-grow-1 ms-3">
+              <div class="row">
+          <div class="col-md-7 mb-3 mb-md-0">
+            <a class="h5 d-block" href="#">${product.productTitle}</a>
+            <div class="fs-6 text-body">
+              <span>Brand:</span>
+              <span class="fw-semibold">${product.brand}</span>
+            </div>
+            <div class="fs-6 text-body">
+              <span>Category:</span>
+              <span class="fw-semibold">${product.categoryName}</span>
+            </div>
+          </div>
+              </div>
+            </div>
+          </div>
+          <div class="d-flex justify-content-between align-items-center my-4">
+            <span>Quantity : ${product.quantity}</span>  
+            <div>
+              <span>Package Quantity : </span>
+              <input type="number" id="packageQuantity" value= 0  readonly/>  
+            </div>
+          </div>
+          <div class="inventoryList">
+            <table class="table">
+              <thead>
+          <tr>
+            <th>Expiry Date</th>
+            <th>Quantity</th>
+          </tr>
+              </thead>
+              <tbody>
+          ${list.map(item => `
+            <tr data-inventory-id="${item._id}">
+              <td>${item.inventoryDetails.expiryDate}</td>
+              <td id="inventoryQuantity">${item.inventoryDetails.quantity}</td>
+              <td id="editOrderQuantity" class="d-flex align-items-center gap-2">
+                  <div class="value-button" id="decrease" value="Decrease Value">-</div>
+                  <input type="number" id="inventoryPackageQuantity" value= 0  readonly/>
+                  <div class="value-button" id="increase" value="Increase Value">+</div>
+              </td>
+            </tr>
+          `).join('')}
+              </tbody>
+            </table>
+          </div>
+        `;
+
+        const productDetailsModal = new bootstrap.Modal(document.getElementById('productDetailsModal'));
+        productDetailsModal.show();
+
+        const packageQuantity = document.getElementById('packageQuantity');
+        modalBody.querySelectorAll('.value-button').forEach(button => {
+        button.addEventListener('click', function() {
+          const input = button.parentElement.querySelector('#inventoryPackageQuantity');
+          const q = button.parentElement.parentElement.querySelector('#inventoryQuantity');
+          let qValue = parseInt(q.textContent);
+          let value = parseInt(input.value);
+          let pValue = parseInt(packageQuantity.value);
+          if (button.id === 'increase' && qValue > 0) {
+            value++;
+            pValue++;
+            qValue--;
+          } else if (button.id === 'decrease' && value > 0) {
+            value--;
+            pValue--;
+            qValue++;
+          }
+          input.value = value;
+          packageQuantity.value = pValue;
+          q.textContent = qValue;
+        });
+      });
+
+      });
+    });
+
+
+
+    document.getElementById('saveInventoryChangesButton').addEventListener('click', function() {
+        const updatedQuantities = [];
+        document.querySelectorAll('tr[data-inventory-id]').forEach(row => {
+          const inventoryId = row.getAttribute('data-inventory-id');
+          const quantity = parseInt(row.querySelector('#inventoryQuantity').textContent)
+          updatedQuantities.push({ _id : inventoryId, quantity });
+        });
+
+        console.log(updatedQuantities)
+
+        fetch('http://localhost/two-cliq-dash-apis/twocliq-dashboard/orders/updateInventory', {
+          method: 'POST',
+          headers: { "login-token": "testToken", "Content-Type": "application/json" },
+          body: JSON.stringify({ updatedQuantities })
+        })
+        .then(response => response.json())
+        .then(data => {
+          console.log('Quantities updated successfully:', data);
+          window.location.reload(); 
+        })
+        .catch(error => {
+          console.error('Error updating quantities:', error);
+        });
+      });
+
+
     document.querySelectorAll('.add-order-list').forEach(btn => {
       btn.addEventListener('click', function() {
         if(btn.classList.contains('btn-outline-primary')) {
@@ -1967,6 +2180,8 @@
         }
       })
     })
+
+
 
      document.getElementById('editButton').addEventListener('click', function () {
         document.querySelector('#editOrders .modal-body').innerHTML = `

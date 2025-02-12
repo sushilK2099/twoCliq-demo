@@ -1937,7 +1937,7 @@
                 <div class="input-group-prepend input-group-text">
                   <i class="bi-search"></i>
                 </div>
-                <input id="datatableWithSearchInput" type="search" class="form-control" placeholder="Search product" aria-label="Search users">
+                <input id="searchInput" type="search" class="form-control" placeholder="Search product" aria-label="Search users">
               </div>
               <!-- End Search -->
             </form>
@@ -1967,49 +1967,7 @@
                     </tr>
                     </thead>
 
-                    <tbody>
-                      <%products.products.forEach((product,index) => {%>
-                        <tr>
-                          
-                          <td class="d-flex gap-2">
-                            <div class="avatar avatar-xl">
-                              <img class="img-fluid" src=<%=product.productImage%> alt="Image Description">
-                            </div>
-                            <div>
-                              <a class="h5 d-block" href="#"><%=product.productTitle%></a>
-                              <span class="fw-semibold"><%=product.brand%></span>
-                              <span class="fw-semibold d-block"><%=product.category%></span>
-
-                            </div>
-                          </td>
-    
-                          <td>
-                            <h5>₹<%=product.mrpPrice%></h5>
-                          </td>
-    
-                          <td>
-                            <h5>₹<%=product.sellingPrice%></h5>
-                          </td>
-
-                          <td>
-                            <h5><%=product.quantity%></h5>
-                          </td>
-    
-                          <td>
-                            <div class="col align-self-center" id="editOrderQuantity">
-                              <div class="value-button" id="decrease" onclick="addOrderDecreaseValue()"  value="Decrease Value">-</div>
-                              <input type="number" style="border:none" data-locked="false" id="editQuantity-<%=index%>" value=1  />
-                              <div class="value-button" id="increase" onclick="addOrderIncreaseValue(<%=product.quantity%>)" value="Increase Value">+</div>
-                            </div>
-                          </td>
-    
-                          <td>
-                            <button class="btn btn-outline-primary add-order-list" data-id="<%= encodeURIComponent(JSON.stringify(product)) %>">Add</button>
-                          </td>
-    
-                        </tr>   
-                    <%})%>
-
+                    <tbody id="results">
               
                     </tbody>
                   </table>
@@ -2124,40 +2082,149 @@
     let stagingArea = [];
     console.log(orderData)
 
-    document.querySelectorAll('.add-order-list').forEach(btn => {
-      btn.addEventListener('click', function(e) {
-        const product = JSON.parse(decodeURIComponent(btn.dataset.id));
-        if(btn.classList.contains('btn-outline-primary')) {
-          btn.classList.remove('btn-outline-primary');
-          btn.classList.add('btn-outline-success');
-          btn.textContent = "Added"
-          btn.parentElement.parentElement.querySelector("input").disabled = true
-          btn.parentElement.parentElement.querySelector("input").dataset.locked = "true"
-          const value = btn.parentElement.parentElement.querySelector("input").value
-          const object = {
-            productId : product.productId,
-            productTitle : product.productTitle,
-            brand : product.brand,
-            categoryName : product.category,
-            imageUrl : product.productImage,
-            quantity : value,
-            mrpPrice : product.mrpPrice,
-            sellingPrice : product.sellingPrice,
-          }
-          orderData.products.push(object)
 
-        } else {
-          const id = product.productId
-          orderData.products = orderData.products.filter(item => item.productId !== id);
-          btn.classList.add('btn-outline-primary');
-          btn.classList.remove('btn-outline-success');
-          btn.textContent = "Add"
-          btn.parentElement.parentElement.querySelector("input").disabled = false
-          btn.parentElement.parentElement.querySelector("input").dataset.locked = "false"
+    const searchInput = document.getElementById("searchInput");
+    const resultsList = document.getElementById("results");
+
+    let debounceTimer;
+
+    searchInput.addEventListener("input", () => {
+        clearTimeout(debounceTimer);
+        debounceTimer = setTimeout(() => {
+            const query = searchInput.value.trim();
+            if (query.length > 3) {
+                fetchProducts(query);
+            } else {
+                resultsList.innerHTML = ""; 
+            }
+        }, 300); 
+    });
+
+    async function fetchProducts(query) {
+        try {
+            const response = await fetch(`http://localhost/two-cliq-dash-apis/twocliq-dashboard/products/inventory/search`, {
+              method: 'POST',
+              headers: { "login-token": "testToken", "Content-Type": "application/json" },
+              body: JSON.stringify({ query })
+            });
+            const products = await response.json();
+
+            resultsList.innerHTML = products.data
+                .map(
+                    (product,index) => {
+                      console.log(product)
+                      return `<tr>
+                          
+                          <td class="d-flex gap-2">
+                            <div class="avatar avatar-xl">
+                              <img class="img-fluid" src="${product.productImage}" alt="Image Description">
+                            </div>
+                            <div>
+                              <a class="h5 d-block" href="#">${product.productTitle}</a>
+                              <span class="fw-semibold">${product.brand}</span>
+                              <span class="fw-semibold d-block">${product.category}</span>
+                            </div>
+                          </td>
+    
+                          <td>
+                            <h5>₹${product.mrpPrice}</h5>
+                          </td>
+    
+                          <td>
+                            <h5>₹${product.sellingPrice}</h5>
+                          </td>
+
+                          <td>
+                            <h5>${product.quantity}</h5>
+                          </td>
+    
+                          <td>
+                            <div class="col align-self-center" id="editOrderQuantity">
+                              <div class="value-button" id="decrease" onclick="addOrderDecreaseValue()"  value="Decrease Value">-</div>
+                              <input type="number" style="border:none" data-locked="false" id="editQuantity-${index}" value=1  />
+                              <div class="value-button" id="increase" onclick="addOrderIncreaseValue(${product.quantity})" value="Increase Value">+</div>
+                            </div>
+                          </td>
+    
+                          <td>
+                            <button class="btn btn-outline-primary add-order-list" onclick="addToOrderList()" data-id="${encodeURIComponent(JSON.stringify(product))}">Add</button>
+                          </td>
+    
+                        </tr>`;
+                    }
+                )
+                .join("");
+        } catch (error) {
+            console.error("Error fetching products:", error);
         }
-      })
-    })
+    }
 
+
+    // document.querySelectorAll('.add-order-list').forEach(btn => {
+    //   btn.addEventListener('click', function(e) {
+    //     const product = JSON.parse(decodeURIComponent(btn.dataset.id));
+    //     if(btn.classList.contains('btn-outline-primary')) {
+    //       btn.classList.remove('btn-outline-primary');
+    //       btn.classList.add('btn-outline-success');
+    //       btn.textContent = "Added"
+    //       btn.parentElement.parentElement.querySelector("input").disabled = true
+    //       btn.parentElement.parentElement.querySelector("input").dataset.locked = "true"
+    //       const value = btn.parentElement.parentElement.querySelector("input").value
+    //       const object = {
+    //         productId : product.productId,
+    //         productTitle : product.productTitle,
+    //         brand : product.brand,
+    //         categoryName : product.category,
+    //         imageUrl : product.productImage,
+    //         quantity : value,
+    //         mrpPrice : product.mrpPrice,
+    //         sellingPrice : product.sellingPrice,
+    //       }
+    //       orderData.products.push(object)
+
+    //     } else {
+    //       const id = product.productId
+    //       orderData.products = orderData.products.filter(item => item.productId !== id);
+    //       btn.classList.add('btn-outline-primary');
+    //       btn.classList.remove('btn-outline-success');
+    //       btn.textContent = "Add"
+    //       btn.parentElement.parentElement.querySelector("input").disabled = false
+    //       btn.parentElement.parentElement.querySelector("input").dataset.locked = "false"
+    //     }
+    //   })
+    // })
+
+      function addToOrderList() {
+        const button = event.target
+        const product = JSON.parse(decodeURIComponent(button.dataset.id));
+        if (button.classList.contains('btn-outline-primary')) {
+          button.classList.remove('btn-outline-primary');
+          button.classList.add('btn-outline-success');
+          button.textContent = "Added";
+          button.parentElement.parentElement.querySelector("input").disabled = true;
+          button.parentElement.parentElement.querySelector("input").dataset.locked = "true";
+          const value = button.parentElement.parentElement.querySelector("input").value;
+          const object = {
+            productId: product.productId,
+            productTitle: product.productTitle,
+            brand: product.brand,
+            categoryName: product.category,
+            imageUrl: product.productImage,
+            quantity: value,
+            mrpPrice: product.mrpPrice,
+            sellingPrice: product.sellingPrice,
+          };
+          orderData.products.push(object);
+        } else {
+          const id = product.productId;
+          orderData.products = orderData.products.filter(item => item.productId !== id);
+          button.classList.add('btn-outline-primary');
+          button.classList.remove('btn-outline-success');
+          button.textContent = "Add";
+          button.parentElement.parentElement.querySelector("input").disabled = false;
+          button.parentElement.parentElement.querySelector("input").dataset.locked = "false";
+        }
+      }
 
     document.getElementById('editButton').addEventListener('click', function () {
         orderData = <%- JSON.stringify(data) %>;
@@ -2174,9 +2241,7 @@
                           <div class="col-md-7 mb-3 mb-md-0">
                             <a class="h5 d-block" href="#"><%=product.productTitle%></a>
                             <a class="h5 d-block" href="#"></a>
-      
-                            
-
+    
                             <div class="fs-6 text-body">
                               <span>Id:</span>
                               <span class="fw-semibold productId"><%=product.productId%></span>
@@ -2284,7 +2349,7 @@
           orderData.products[index].quantity -= 1;
       }
     }
-
+    
     const saveOrderButton = document.getElementById('saveOrder')
     saveOrderButton.addEventListener("click", saveData);
     document.getElementById('addOrdersBtn').addEventListener('click', saveData)
